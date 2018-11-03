@@ -6,13 +6,13 @@ import java.util.logging.Level;
 
 public class JulOption {
 
-	private String pattern;
-
-	private boolean console;
+	private Formatter formatter = new JulFormatter();
 
 	private Level level = Level.INFO;
 
-	private Formatter formatter = new JulFormatter();
+	private String pattern;
+
+	private boolean console;
 
 	public String getPattern() {
 		return pattern;

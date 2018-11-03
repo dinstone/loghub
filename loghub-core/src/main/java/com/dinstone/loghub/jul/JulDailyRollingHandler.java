@@ -159,7 +159,7 @@ public class JulDailyRollingHandler extends StreamHandler {
 		FileOutputStream nfos = null;
 		try {
 			File file = new File(generateFileName(nowDate));
-			if (!file.exists()) {
+			if (!file.exists() && file.getParentFile() != null) {
 				file.getParentFile().mkdirs();
 			}
 			nfos = new FileOutputStream(file, true);
