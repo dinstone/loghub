@@ -197,6 +197,9 @@
 	</profiles>
 	<modules>
 		<module>loghub-core</module>
+		<module>loghub-slf4j</module>
+		<module>loghub-log4j</module>
+		<module>loghub-log4j2</module>
 	</modules>
 	<dependencies>
 		<dependency>
