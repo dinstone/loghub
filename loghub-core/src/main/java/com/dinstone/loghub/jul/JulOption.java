@@ -25,6 +25,8 @@ public class JulOption {
 
 	private Level level = Level.INFO;
 
+	private int maxFileSize = 31;
+
 	private String pattern;
 
 	private boolean console;
@@ -62,6 +64,15 @@ public class JulOption {
 
 	public JulOption setConsole(boolean console) {
 		this.console = console;
+		return this;
+	}
+
+	public int getMaxFileSize() {
+		return maxFileSize;
+	}
+
+	public JulOption setMaxFileSize(int maxFileSize) {
+		this.maxFileSize = maxFileSize;
 		return this;
 	}
 

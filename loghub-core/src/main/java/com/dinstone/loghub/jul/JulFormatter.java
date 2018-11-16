@@ -21,9 +21,20 @@ import java.util.Date;
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
 
+/**
+ * JUL log record formatter.<br>
+ * yyyy-MM-dd HH:mm:ss.SSS [level] class.method - message
+ * 
+ * @author dinstone
+ *
+ */
 public class JulFormatter extends Formatter {
 
-	private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+	private static final String PLACE_HOLDER_REGEX = "\\{\\}";
+
+	private static final String PLACE_HOLDER_CHARS = "{}";
+
+	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
 	@Override
 	public String format(LogRecord record) {
@@ -42,10 +53,10 @@ public class JulFormatter extends Formatter {
 		} else {
 			sb.append(record.getLoggerName());
 		}
-		sb.append(" ");
+		sb.append(" - ");
 
 		String message = record.getMessage() == null ? "" : record.getMessage();
-		message = resolvePlaceHolder(message, record.getParameters(), "{}");
+		message = resolvePlaceHolder(message, record.getParameters());
 		// message = String.format(message, record.getParameters());
 
 		sb.append(message);
@@ -79,20 +90,20 @@ public class JulFormatter extends Formatter {
 		return sb.toString();
 	}
 
-	public String resolvePlaceHolder(String msg, Object[] parameters, String placeHolder)
-			throws IllegalArgumentException {
-		if (parameters == null)
+	public String resolvePlaceHolder(String msg, Object[] parameters) throws IllegalArgumentException {
+		if (parameters == null || parameters.length == 0) {
 			return msg;
+		}
 		int parameterSize = parameters.length;
 		int fromIndex = 0;
-		int i = 0;
-		do {
-			fromIndex = msg.indexOf(placeHolder, fromIndex + 1);
-			if (fromIndex >= 0 && i < parameterSize) {
-				msg = msg.replace(placeHolder, String.valueOf(parameters[i]));
+		int count = 0;
+		while (fromIndex >= 0 && count < parameterSize) {
+			fromIndex = msg.indexOf(PLACE_HOLDER_CHARS, fromIndex + 1);
+			if (fromIndex >= 0 && count < parameterSize) {
+				msg = msg.replaceFirst(PLACE_HOLDER_REGEX, String.valueOf(parameters[count]));
 			}
-			i++;
-		} while (fromIndex >= 0 && i < parameterSize);
+			count++;
+		}
 		return msg;
 	}
 }

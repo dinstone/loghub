@@ -35,7 +35,9 @@ public class LoggerTest {
 
 	@Test
 	public void test01() throws InterruptedException {
-		JulOption option = new JulOption().setPattern("logs/loghub_%d.log");
+		LoggerFactory.getLogger("");
+
+		JulOption option = new JulOption().setPattern("logs/loghub_%d.log").setMaxFileSize(3);
 		JulDelegateFactory factory = new JulDelegateFactory(option);
 		LoggerFactory.initialise(factory);
 

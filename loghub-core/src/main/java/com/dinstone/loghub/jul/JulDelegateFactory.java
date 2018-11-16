@@ -58,7 +58,8 @@ public class JulDelegateFactory implements LogDelegateFactory {
 		try {
 			String pattern = option.getPattern();
 			if (pattern != null) {
-				Handler rollingHandler = new JulDailyRollingHandler(pattern);
+				int maxFileSize = option.getMaxFileSize();
+				Handler rollingHandler = new JulDailyRollingHandler(pattern, maxFileSize);
 				rollingHandler.setFormatter(option.getFormatter());
 				rollingHandler.setLevel(option.getLevel());
 				logger.addHandler(rollingHandler);
@@ -74,6 +75,7 @@ public class JulDelegateFactory implements LogDelegateFactory {
 		}
 	}
 
+	@Override
 	public LogDelegate createDelegate(final String name) {
 		return new JulDelegate(name);
 	}

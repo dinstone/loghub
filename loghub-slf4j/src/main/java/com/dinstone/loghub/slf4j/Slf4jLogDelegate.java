@@ -47,26 +47,32 @@ public class Slf4jLogDelegate implements LogDelegate {
 		this.logger = (Logger) logger;
 	}
 
+	@Override
 	public boolean isInfoEnabled() {
 		return logger.isInfoEnabled();
 	}
 
+	@Override
 	public boolean isDebugEnabled() {
 		return logger.isDebugEnabled();
 	}
 
+	@Override
 	public boolean isTraceEnabled() {
 		return logger.isTraceEnabled();
 	}
 
+	@Override
 	public void fatal(final Object message) {
 		log(ERROR_INT, message);
 	}
 
+	@Override
 	public void fatal(final Object message, final Throwable t) {
 		log(ERROR_INT, message, t);
 	}
 
+	@Override
 	public void error(final Object message) {
 		log(ERROR_INT, message);
 	}
@@ -76,6 +82,7 @@ public class Slf4jLogDelegate implements LogDelegate {
 		log(ERROR_INT, message, null, params);
 	}
 
+	@Override
 	public void error(final Object message, final Throwable t) {
 		log(ERROR_INT, message, t);
 	}
@@ -85,6 +92,7 @@ public class Slf4jLogDelegate implements LogDelegate {
 		log(ERROR_INT, message, t, params);
 	}
 
+	@Override
 	public void warn(final Object message) {
 		log(WARN_INT, message);
 	}
@@ -94,6 +102,7 @@ public class Slf4jLogDelegate implements LogDelegate {
 		log(WARN_INT, message, null, params);
 	}
 
+	@Override
 	public void warn(final Object message, final Throwable t) {
 		log(WARN_INT, message, t);
 	}
@@ -103,6 +112,7 @@ public class Slf4jLogDelegate implements LogDelegate {
 		log(WARN_INT, message, t, params);
 	}
 
+	@Override
 	public void info(final Object message) {
 		log(INFO_INT, message);
 	}
@@ -112,6 +122,7 @@ public class Slf4jLogDelegate implements LogDelegate {
 		log(INFO_INT, message, null, params);
 	}
 
+	@Override
 	public void info(final Object message, final Throwable t) {
 		log(INFO_INT, message, t);
 	}
@@ -121,22 +132,27 @@ public class Slf4jLogDelegate implements LogDelegate {
 		log(INFO_INT, message, t, params);
 	}
 
+	@Override
 	public void debug(final Object message) {
 		log(DEBUG_INT, message);
 	}
 
+	@Override
 	public void debug(final Object message, final Object... params) {
 		log(DEBUG_INT, message, null, params);
 	}
 
+	@Override
 	public void debug(final Object message, final Throwable t) {
 		log(DEBUG_INT, message, t);
 	}
 
+	@Override
 	public void debug(final Object message, final Throwable t, final Object... params) {
 		log(DEBUG_INT, message, t, params);
 	}
 
+	@Override
 	public void trace(final Object message) {
 		log(TRACE_INT, message);
 	}
@@ -146,6 +162,7 @@ public class Slf4jLogDelegate implements LogDelegate {
 		log(TRACE_INT, message, null, params);
 	}
 
+	@Override
 	public void trace(final Object message, final Throwable t) {
 		log(TRACE_INT, message, t);
 	}

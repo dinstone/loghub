@@ -24,6 +24,7 @@ import com.dinstone.loghub.spi.LogDelegateFactory;
  */
 public class Slf4jLogDelegateFactory implements LogDelegateFactory {
 
+	@Override
 	public LogDelegate createDelegate(final String clazz) {
 		return new Slf4jLogDelegate(clazz);
 	}

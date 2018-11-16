@@ -17,11 +17,14 @@
 package com.dinstone.loghub.jul;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
@@ -35,7 +38,7 @@ import java.util.logging.LogRecord;
 import java.util.logging.StreamHandler;
 
 /**
- * Simple daily rolling file handler
+ * Simple daily rolling file handler, support max file clear.
  *
  * @author dinstone
  */
@@ -43,13 +46,17 @@ public class JulDailyRollingHandler extends StreamHandler {
 
 	private static final String DEFAULT_LOG_FILE_PATTERN = "logs/jul_%d.log";
 
-	private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+	private static SimpleDateFormat DATEFORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
 	private final RollingCalendar calendar = new RollingCalendar();
 
 	private final Date nowDate = new Date();
 
 	private FileOutputStream fos;
+
+	private String nowLogFile;
+
+	private int maxFileSize;
 
 	private String pattern;
 
@@ -60,16 +67,43 @@ public class JulDailyRollingHandler extends StreamHandler {
 		activate();
 	}
 
-	public JulDailyRollingHandler(String pattern) throws IOException {
+	public JulDailyRollingHandler(String pattern, int maxFileSize) throws IOException {
 		if (pattern == null || pattern.length() < 1) {
 			throw new IllegalArgumentException("pattern is empty");
+		}
+		if (maxFileSize <= 0) {
+			maxFileSize = 1;
 		}
 
 		configure();
 
 		this.pattern = pattern;
+		this.maxFileSize = maxFileSize;
 
 		activate();
+	}
+
+	@Override
+	public synchronized void publish(LogRecord record) {
+		if (!isLoggable(record)) {
+			return;
+		}
+
+		long currentTimeMillis = System.currentTimeMillis();
+		if (currentTimeMillis >= nextCheck) {
+			nowDate.setTime(currentTimeMillis);
+			nextCheck = calendar.nextCheckDate(nowDate).getTime();
+			try {
+				rollover();
+			} catch (IOException ioe) {
+				if (ioe instanceof InterruptedIOException) {
+					Thread.currentThread().interrupt();
+				}
+			}
+		}
+
+		super.publish(record);
+		super.flush();
 	}
 
 	private void configure() {
@@ -91,50 +125,8 @@ public class JulDailyRollingHandler extends StreamHandler {
 			} catch (Exception ex2) {
 			}
 		}
-	}
 
-	private Formatter getPropertyFormatter(String formatteKey) {
-		LogManager logManager = LogManager.getLogManager();
-		String val = logManager.getProperty(formatteKey);
-		try {
-			if (val != null) {
-				Class<?> clz = ClassLoader.getSystemClassLoader().loadClass(val);
-				return (Formatter) clz.newInstance();
-			}
-		} catch (Exception ex) {
-			// We got one of a variety of exceptions in creating the
-			// class or creating an instance.
-			// Drop through.
-		}
-		// We got an exception. Return the defaultValue.
-		return new JulFormatter();
-	}
-
-	private Filter getPropertyFilter(String filterKey) {
-		LogManager logManager = LogManager.getLogManager();
-		String val = logManager.getProperty(filterKey);
-		try {
-			if (val != null) {
-				Class<?> clz = ClassLoader.getSystemClassLoader().loadClass(val);
-				return (Filter) clz.newInstance();
-			}
-		} catch (Exception ex) {
-			// We got one of a variety of exceptions in creating the
-			// class or creating an instance.
-			// Drop through.
-		}
-		// We got an exception. Return the defaultValue.
-		return null;
-	}
-
-	private Level getPropertyLevel(String levelKey) {
-		LogManager logManager = LogManager.getLogManager();
-		String levelVaule = logManager.getProperty(levelKey);
-		if (levelVaule == null) {
-			return Level.ALL;
-		}
-		Level level = Level.parse(levelVaule.trim());
-		return level != null ? level : Level.ALL;
+		maxFileSize = getPropertyMaxFileSize(cname + ".maxFileSize");
 	}
 
 	private void activate() throws IOException {
@@ -144,36 +136,23 @@ public class JulDailyRollingHandler extends StreamHandler {
 
 		nextCheck = calendar.nextCheckDate(nowDate).getTime();
 
-		rolling();
+		rollover();
 	}
 
-	@Override
-	public synchronized void publish(LogRecord record) {
-		if (!isLoggable(record)) {
-			return;
+	private void rollover() throws IOException {
+		rolling();
+		try {
+			clearing();
+		} catch (Exception e) {
+			super.reportError(null, e, ErrorManager.GENERIC_FAILURE);
 		}
-
-		long currentTimeMillis = System.currentTimeMillis();
-		if (currentTimeMillis >= nextCheck) {
-			nowDate.setTime(currentTimeMillis);
-			nextCheck = calendar.nextCheckDate(nowDate).getTime();
-			try {
-				rolling();
-			} catch (IOException ioe) {
-				if (ioe instanceof InterruptedIOException) {
-					Thread.currentThread().interrupt();
-				}
-			}
-		}
-
-		super.publish(record);
-		super.flush();
 	}
 
 	private void rolling() throws IOException {
 		FileOutputStream nfos = null;
 		try {
-			File file = new File(generateFileName(nowDate));
+			nowLogFile = generateLogFile(nowDate);
+			File file = new File(nowLogFile);
 			if (!file.exists() && file.getParentFile() != null) {
 				file.getParentFile().mkdirs();
 			}
@@ -192,8 +171,111 @@ public class JulDailyRollingHandler extends StreamHandler {
 		super.setOutputStream(fos);
 	}
 
-	private synchronized String generateFileName(Date date) {
-		return pattern.replaceAll("%d", dateFormat.format(date));
+	private void clearing() {
+		File[] files = getHistoryLogFiles();
+		if (files != null && files.length > 0) {
+			Arrays.sort(files, new Comparator<File>() {
+
+				@Override
+				public int compare(File f1, File f2) {
+					return (int) (f1.lastModified() - f2.lastModified());
+				}
+			});
+
+			if (files.length >= maxFileSize) {
+				for (int i = 0; i <= files.length - maxFileSize; i++) {
+					files[i].delete();
+				}
+			}
+		}
+	}
+
+	private int getPropertyMaxFileSize(String maxFileSizeKey) {
+		LogManager logManager = LogManager.getLogManager();
+		String val = logManager.getProperty(maxFileSizeKey);
+		try {
+			if (val != null) {
+				int v = Integer.parseInt(val);
+				if (v <= 0) {
+					v = 1;
+				}
+				return v;
+			}
+		} catch (Exception ex) {
+			// We got one of a variety of exceptions in creating the
+			// class or creating an instance. Drop through.
+		}
+		return Integer.MAX_VALUE;
+	}
+
+	private Formatter getPropertyFormatter(String formatteKey) {
+		LogManager logManager = LogManager.getLogManager();
+		String val = logManager.getProperty(formatteKey);
+		try {
+			if (val != null) {
+				Class<?> clz = ClassLoader.getSystemClassLoader().loadClass(val);
+				return (Formatter) clz.newInstance();
+			}
+		} catch (Exception ex) {
+			// We got one of a variety of exceptions in creating the
+			// class or creating an instance. Drop through.
+		}
+		// We got an exception. Return the defaultValue.
+		return new JulFormatter();
+	}
+
+	private Filter getPropertyFilter(String filterKey) {
+		LogManager logManager = LogManager.getLogManager();
+		String val = logManager.getProperty(filterKey);
+		try {
+			if (val != null) {
+				Class<?> clz = ClassLoader.getSystemClassLoader().loadClass(val);
+				return (Filter) clz.newInstance();
+			}
+		} catch (Exception ex) {
+			// We got one of a variety of exceptions in creating the
+			// class or creating an instance. Drop through.
+		}
+		// We got an exception. Return the defaultValue.
+		return null;
+	}
+
+	private Level getPropertyLevel(String levelKey) {
+		LogManager logManager = LogManager.getLogManager();
+		String levelVaule = logManager.getProperty(levelKey);
+		if (levelVaule == null) {
+			return Level.ALL;
+		}
+		Level level = Level.parse(levelVaule.trim());
+		return level != null ? level : Level.ALL;
+	}
+
+	private File[] getHistoryLogFiles() {
+		final File file = new File(pattern);
+		File logPath = file.getParentFile();
+		if (logPath == null) {
+			logPath = new File(".");
+		}
+
+		final File nfile = new File(nowLogFile);
+		return logPath.listFiles(new FileFilter() {
+
+			@Override
+			public boolean accept(File file) {
+				try {
+					if (nfile.getName().equals(file.getName())) {
+						return false;
+					}
+					return true;
+				} catch (Exception e) {
+					return false;
+				}
+			}
+		});
+	}
+
+	private synchronized String generateLogFile(Date date) {
+		return pattern.replaceAll("%d", DATEFORMAT.format(date));
 	}
 
 	class RollingCalendar extends GregorianCalendar {

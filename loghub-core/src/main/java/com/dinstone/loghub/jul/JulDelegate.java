@@ -29,27 +29,33 @@ public class JulDelegate implements LogDelegate {
         logger = java.util.logging.Logger.getLogger(name);
     }
 
-    public boolean isInfoEnabled() {
+    @Override
+	public boolean isInfoEnabled() {
         return logger.isLoggable(Level.INFO);
     }
 
-    public boolean isDebugEnabled() {
+    @Override
+	public boolean isDebugEnabled() {
         return logger.isLoggable(Level.FINE);
     }
 
-    public boolean isTraceEnabled() {
+    @Override
+	public boolean isTraceEnabled() {
         return logger.isLoggable(Level.FINEST);
     }
 
-    public void fatal(final Object message) {
+    @Override
+	public void fatal(final Object message) {
         log(Level.SEVERE, message);
     }
 
-    public void fatal(final Object message, final Throwable t) {
+    @Override
+	public void fatal(final Object message, final Throwable t) {
         log(Level.SEVERE, message, t);
     }
 
-    public void error(final Object message) {
+    @Override
+	public void error(final Object message) {
         log(Level.SEVERE, message);
     }
 
@@ -58,7 +64,8 @@ public class JulDelegate implements LogDelegate {
         log(Level.SEVERE, message, null, params);
     }
 
-    public void error(final Object message, final Throwable t) {
+    @Override
+	public void error(final Object message, final Throwable t) {
         log(Level.SEVERE, message, t);
     }
 
@@ -67,7 +74,8 @@ public class JulDelegate implements LogDelegate {
         log(Level.SEVERE, message, t, params);
     }
 
-    public void warn(final Object message) {
+    @Override
+	public void warn(final Object message) {
         log(Level.WARNING, message);
     }
 
@@ -76,7 +84,8 @@ public class JulDelegate implements LogDelegate {
         log(Level.WARNING, message, null, params);
     }
 
-    public void warn(final Object message, final Throwable t) {
+    @Override
+	public void warn(final Object message, final Throwable t) {
         log(Level.WARNING, message, t);
     }
 
@@ -85,7 +94,8 @@ public class JulDelegate implements LogDelegate {
         log(Level.WARNING, message, t, params);
     }
 
-    public void info(final Object message) {
+    @Override
+	public void info(final Object message) {
         log(Level.INFO, message);
     }
 
@@ -94,7 +104,8 @@ public class JulDelegate implements LogDelegate {
         log(Level.INFO, message, null, params);
     }
 
-    public void info(final Object message, final Throwable t) {
+    @Override
+	public void info(final Object message, final Throwable t) {
         log(Level.INFO, message, t);
     }
 
@@ -103,7 +114,8 @@ public class JulDelegate implements LogDelegate {
         log(Level.INFO, message, t, params);
     }
 
-    public void debug(final Object message) {
+    @Override
+	public void debug(final Object message) {
         log(Level.FINE, message);
     }
 
@@ -112,7 +124,8 @@ public class JulDelegate implements LogDelegate {
         log(Level.FINE, message, null, params);
     }
 
-    public void debug(final Object message, final Throwable t) {
+    @Override
+	public void debug(final Object message, final Throwable t) {
         log(Level.FINE, message, t);
     }
 
@@ -121,7 +134,8 @@ public class JulDelegate implements LogDelegate {
         log(Level.FINE, message, t, params);
     }
 
-    public void trace(final Object message) {
+    @Override
+	public void trace(final Object message) {
         log(Level.FINEST, message);
     }
 
@@ -130,7 +144,8 @@ public class JulDelegate implements LogDelegate {
         log(Level.FINEST, message, null, params);
     }
 
-    public void trace(final Object message, final Throwable t) {
+    @Override
+	public void trace(final Object message, final Throwable t) {
         log(Level.FINEST, message, t);
     }
 
