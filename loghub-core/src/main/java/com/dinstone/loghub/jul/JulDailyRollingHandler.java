@@ -46,7 +46,7 @@ public class JulDailyRollingHandler extends StreamHandler {
 
 	private static final String DEFAULT_LOG_FILE_PATTERN = "logs/jul_%d.log";
 
-	private static SimpleDateFormat DATEFORMAT = new SimpleDateFormat("yyyy-MM-dd");
+	private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
 	private final RollingCalendar calendar = new RollingCalendar();
 
@@ -275,7 +275,7 @@ public class JulDailyRollingHandler extends StreamHandler {
 	}
 
 	private synchronized String generateLogFile(Date date) {
-		return pattern.replaceAll("%d", DATEFORMAT.format(date));
+		return pattern.replaceAll("%d", dateFormat.format(date));
 	}
 
 	class RollingCalendar extends GregorianCalendar {
