@@ -19,6 +19,7 @@ package com.dinstone.loghub.jul;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Formatter;
+import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
 /**
@@ -41,7 +42,19 @@ public class JulFormatter extends Formatter {
 		StringBuilder sb = new StringBuilder();
 		sb.append(dateFormat.format(new Date(record.getMillis())));
 		sb.append(" [");
-		sb.append(record.getLevel());
+		if (Level.SEVERE.equals(record.getLevel())) {
+			sb.append("E");
+		} else if (Level.WARNING.equals(record.getLevel())) {
+			sb.append("W");
+		} else if (Level.INFO.equals(record.getLevel())) {
+			sb.append("I");
+		} else if (Level.CONFIG.equals(record.getLevel())) {
+			sb.append("D");
+		} else if (Level.FINE.equals(record.getLevel())) {
+			sb.append("T");
+		} else {
+			sb.append("A");
+		}
 		sb.append("] ");
 
 		// source

@@ -27,7 +27,11 @@ public class LoggerTest {
 	public void test00() throws InterruptedException {
 		Logger logger = LoggerFactory.getLogger(LoggerTest.class);
 		for (int i = 0; i < 5; i++) {
-			logger.info("case 00 {},{}", i);
+			logger.error("error {}", i);
+			logger.warn("warn {}", i);
+			logger.info("info {}", i);
+			logger.debug("debug {}", i);
+			logger.trace("trace {}", i);
 		}
 
 		Thread.sleep(1000);
@@ -43,7 +47,11 @@ public class LoggerTest {
 
 		Logger logger = LoggerFactory.getLogger(LoggerTest.class);
 		for (int i = 0; i < 5; i++) {
-			logger.info("case 01 {},{}", i);
+			logger.error("error {}", i);
+			logger.warn("warn {}", i);
+			logger.info("info {}", i);
+			logger.debug("debug {}", i);
+			logger.trace("trace {}", i);
 		}
 
 		Thread.sleep(1000);
