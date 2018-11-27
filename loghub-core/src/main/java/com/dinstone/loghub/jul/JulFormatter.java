@@ -23,7 +23,7 @@ import java.util.logging.LogRecord;
 
 /**
  * JUL log record formatter.<br>
- * yyyy-MM-dd HH:mm:ss.SSS [level] class.method - message
+ * yyyy-MM-dd HH:mm:ss.SSS [level] Class.Method - message
  * 
  * @author dinstone
  *
@@ -34,7 +34,7 @@ public class JulFormatter extends Formatter {
 
 	private static final String PLACE_HOLDER_CHARS = "{}";
 
-	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+	private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
 	@Override
 	public String format(LogRecord record) {
