@@ -16,7 +16,6 @@
 
 package com.dinstone.loghub.jul;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileOutputStream;
@@ -40,11 +39,11 @@ import java.util.logging.LogRecord;
 import java.util.logging.StreamHandler;
 
 /**
- * Simple daily rolling file handler, support max file clear.
+ * Simple limit rolling file handler, support max file clear.
  *
  * @author dinstone
  */
-public class JulDailyRollingHandler extends StreamHandler {
+public class JulLimitRollingHandler extends StreamHandler {
 
 	private static final String DEFAULT_LOG_FILE_PATTERN = "logs/jul_%d.log";
 
@@ -54,22 +53,22 @@ public class JulDailyRollingHandler extends StreamHandler {
 
 	private final Date nowDate = new Date();
 
-	private String nowLogFile;
+	private MeteredStream meter;
 
-	private OutputStream fos;
+	private String nowLogFile;
 
 	private int maxFileSize;
 
 	private String pattern;
 
-	private long nextCheck;
+	private int limit; // zero => no limit.
 
-	public JulDailyRollingHandler() throws IOException {
+	public JulLimitRollingHandler() throws IOException {
 		configure();
 		activate();
 	}
 
-	public JulDailyRollingHandler(String pattern, int maxFileSize) throws IOException {
+	public JulLimitRollingHandler(String pattern, int maxFileSize) throws IOException {
 		if (pattern == null || pattern.length() < 1) {
 			throw new IllegalArgumentException("pattern is empty");
 		}
@@ -91,10 +90,7 @@ public class JulDailyRollingHandler extends StreamHandler {
 			return;
 		}
 
-		long currentTimeMillis = System.currentTimeMillis();
-		if (currentTimeMillis >= nextCheck) {
-			nowDate.setTime(currentTimeMillis);
-			nextCheck = calendar.nextCheckDate(nowDate).getTime();
+		if (limit > 0 && meter.written >= limit) {
 			try {
 				rollover();
 			} catch (IOException ioe) {
@@ -106,6 +102,48 @@ public class JulDailyRollingHandler extends StreamHandler {
 
 		super.publish(record);
 		super.flush();
+	}
+
+	/**
+	 * A metered stream is a subclass of OutputStream that (a) forwards all its
+	 * output to a target stream (b) keeps track of how many bytes have been written
+	 */
+	private class MeteredStream extends OutputStream {
+		final OutputStream out;
+		int written;
+
+		MeteredStream(OutputStream out, int written) {
+			this.out = out;
+			this.written = written;
+		}
+
+		@Override
+		public void write(int b) throws IOException {
+			out.write(b);
+			written++;
+		}
+
+		@Override
+		public void write(byte buff[]) throws IOException {
+			out.write(buff);
+			written += buff.length;
+		}
+
+		@Override
+		public void write(byte buff[], int off, int len) throws IOException {
+			out.write(buff, off, len);
+			written += len;
+		}
+
+		@Override
+		public void flush() throws IOException {
+			out.flush();
+		}
+
+		@Override
+		public void close() throws IOException {
+			out.close();
+		}
 	}
 
 	private void configure() {
@@ -136,7 +174,7 @@ public class JulDailyRollingHandler extends StreamHandler {
 			pattern += "%d";
 		}
 
-		nextCheck = calendar.nextCheckDate(nowDate).getTime();
+//		nextCheck = calendar.nextCheckDate(nowDate).getTime();
 
 		rollover();
 	}
@@ -151,26 +189,26 @@ public class JulDailyRollingHandler extends StreamHandler {
 	}
 
 	private void rolling() throws IOException {
-		OutputStream nfos = null;
+		FileOutputStream nfos = null;
 		try {
 			nowLogFile = generateLogFile(nowDate);
 			File file = new File(nowLogFile);
 			if (!file.exists() && file.getParentFile() != null) {
 				file.getParentFile().mkdirs();
 			}
-			nfos = new BufferedOutputStream(new FileOutputStream(file, true));
+			nfos = new FileOutputStream(file, true);
 		} catch (IOException ex) {
 			super.reportError(null, ex, ErrorManager.GENERIC_FAILURE);
 		}
 
-		if (nfos != null) {
-			if (fos != null) {
-				fos.close();
-			}
-			fos = nfos;
-		}
-
-		super.setOutputStream(fos);
+//		if (nfos != null) {
+//			if (fos != null) {
+//				fos.close();
+//			}
+//			fos = nfos;
+//		}
+//
+//		super.setOutputStream(fos);
 	}
 
 	private void clearing() {
@@ -277,6 +315,9 @@ public class JulDailyRollingHandler extends StreamHandler {
 	}
 
 	private synchronized String generateLogFile(Date date) {
+		if (limit > 0) {
+			
+		}
 		return pattern.replaceAll("%d", dateFormat.format(date));
 	}
 
