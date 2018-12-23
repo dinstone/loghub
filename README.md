@@ -7,7 +7,7 @@ select log implement:
 		<dependency>
 			<groupId>com.dinstone.loghub</groupId>
 			<artifactId>loghub-core</artifactId>
-			<version>1.0.1</version>
+			<version>1.2.0</version>
 		</dependency>
 ```
 or
@@ -15,7 +15,7 @@ or
 		<dependency>
 			<groupId>com.dinstone.loghub</groupId>
 			<artifactId>loghub-slf4j</artifactId>
-			<version>1.0.1</version>
+			<version>1.2.0</version>
 		</dependency>
 ```
 
@@ -27,7 +27,7 @@ or
 	public void test01() throws InterruptedException {
 		LoggerFactory.getLogger("");
 
-		JulOption option = new JulOption().setPattern("logs/loghub_%d.log").setMaxFileSize(3);
+		JulOption option = new JulOption().setPattern("logs/loghub.log").setLimitDays(3);
 		JulDelegateFactory factory = new JulDelegateFactory(option);
 		LoggerFactory.initialise(factory);
 
