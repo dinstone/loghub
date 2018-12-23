@@ -25,7 +25,18 @@ public class JulOption {
 
 	private Level level = Level.INFO;
 
+	@Deprecated
 	private int maxFileSize = 31;
+
+	/**
+	 * Keep history logs for up to limit days
+	 */
+	private int limitDays = 30;
+
+	/**
+	 * Log file size : zero => no limit.
+	 */
+	private int limitSize;
 
 	private String pattern;
 
@@ -67,12 +78,32 @@ public class JulOption {
 		return this;
 	}
 
+	@Deprecated
 	public int getMaxFileSize() {
 		return maxFileSize;
 	}
 
+	@Deprecated
 	public JulOption setMaxFileSize(int maxFileSize) {
 		this.maxFileSize = maxFileSize;
+		return this;
+	}
+
+	public int getLimitDays() {
+		return limitDays;
+	}
+
+	public JulOption setLimitDays(int limitDays) {
+		this.limitDays = limitDays;
+		return this;
+	}
+
+	public int getLimitSize() {
+		return limitSize;
+	}
+
+	public JulOption setLimitSize(int limitSize) {
+		this.limitSize = limitSize;
 		return this;
 	}
 

@@ -46,7 +46,7 @@ import com.dinstone.loghub.spi.NamedThreadFactory;
  *
  * @author dinstone
  */
-public class JulDailyRollingHandler extends StreamHandler {
+public class JulLimitRollingHandler extends StreamHandler {
 
 	private static final ExecutorService LOG_FILES_CLEANER = Executors
 			.newSingleThreadExecutor(new NamedThreadFactory("LogFilesCleaner", true));
@@ -78,12 +78,12 @@ public class JulDailyRollingHandler extends StreamHandler {
 	private int limitDays;
 
 	/**
-	 * Log file size : zero => no limit.
+	 * zero => no limit.
 	 */
 	private int limitSize;
 
 	/**
-	 * Next rolling Instant
+	 * next rolling Instant
 	 */
 	private long nextCheck;
 
@@ -107,12 +107,12 @@ public class JulDailyRollingHandler extends StreamHandler {
 	 */
 	private int unique;
 
-	public JulDailyRollingHandler() throws IOException {
+	public JulLimitRollingHandler() throws IOException {
 		configure();
 		activate();
 	}
 
-	public JulDailyRollingHandler(String pattern, int limitDays, int limitSize) throws IOException {
+	public JulLimitRollingHandler(String pattern, int limitDays, int limitSize) throws IOException {
 		if (pattern == null || pattern.length() < 1) {
 			throw new IllegalArgumentException("pattern is empty");
 		}

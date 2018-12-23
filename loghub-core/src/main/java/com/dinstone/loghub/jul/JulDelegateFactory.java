@@ -58,8 +58,9 @@ public class JulDelegateFactory implements LogDelegateFactory {
 		try {
 			String pattern = option.getPattern();
 			if (pattern != null) {
-				int maxFileSize = option.getMaxFileSize();
-				Handler rollingHandler = new JulDailyRollingHandler(pattern, maxFileSize);
+				int limitSize = option.getLimitSize();
+				int limitDays = option.getLimitDays();
+				Handler rollingHandler = new JulDailyRollingHandler(pattern, limitDays, limitSize);
 				rollingHandler.setFormatter(option.getFormatter());
 				rollingHandler.setLevel(option.getLevel());
 				logger.addHandler(rollingHandler);
