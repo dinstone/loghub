@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2018 dinstone<dinstone@163.com>
+ * Copyright (C) 2018-2019 dinstone<dinstone@163.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.dinstone.loghub;
 
 import org.junit.Test;
@@ -42,6 +41,26 @@ public class LoggerTest {
 		LoggerFactory.getLogger("");
 
 		JulOption option = new JulOption().setPattern("logs/loghub.log").setLimitDays(3);
+		JulDelegateFactory factory = new JulDelegateFactory(option);
+		LoggerFactory.initialise(factory);
+
+		Logger logger = LoggerFactory.getLogger(LoggerTest.class);
+		for (int i = 0; i < 5; i++) {
+			logger.error("error {}", i);
+			logger.warn("warn {}", i);
+			logger.info("info {}", i);
+			logger.debug("debug {}", i);
+			logger.trace("trace {}", i);
+		}
+
+		Thread.sleep(1000);
+	}
+
+	@Test
+	public void test02() throws InterruptedException {
+		LoggerFactory.getLogger("");
+
+		JulOption option = new JulOption().setConsole(true);
 		JulDelegateFactory factory = new JulDelegateFactory(option);
 		LoggerFactory.initialise(factory);
 

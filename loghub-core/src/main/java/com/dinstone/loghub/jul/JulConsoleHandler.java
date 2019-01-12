@@ -13,23 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.dinstone.loghub.log4j2;
+package com.dinstone.loghub.jul;
 
-import org.junit.Test;
+import java.io.OutputStream;
+import java.util.logging.Formatter;
+import java.util.logging.StreamHandler;
 
-import com.dinstone.loghub.Logger;
-import com.dinstone.loghub.LoggerFactory;
+/**
+ * simple console handler
+ * 
+ * @author dinstone
+ *
+ */
+public class JulConsoleHandler extends StreamHandler {
 
-public class LoggerTest {
-
-	@Test
-	public void test00() throws InterruptedException {
-		Logger logger = LoggerFactory.getLogger(LoggerTest.class);
-		for (int i = 0; i < 5; i++) {
-			logger.info("case 00 {}", i);
-		}
-
-		Thread.sleep(1000);
+	public JulConsoleHandler(OutputStream out, Formatter formatter) {
+		super(out, formatter);
 	}
 
 }

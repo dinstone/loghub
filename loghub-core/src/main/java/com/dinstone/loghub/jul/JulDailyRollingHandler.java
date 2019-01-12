@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2018 dinstone<dinstone@163.com>
+ * Copyright (C) 2018-2019 dinstone<dinstone@163.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.dinstone.loghub.jul;
 
 import java.io.BufferedOutputStream;
@@ -65,7 +64,7 @@ public class JulDailyRollingHandler extends StreamHandler {
 	/**
 	 * meter written length for file output stream
 	 */
-	private MeteredStream meter;
+	private MeteredStream meteredStream;
 
 	/**
 	 * log file name pattern: [Prefix_]YYYY-DD-MM[_Unique][.Suffix]
@@ -151,7 +150,7 @@ public class JulDailyRollingHandler extends StreamHandler {
 					Thread.currentThread().interrupt();
 				}
 			}
-		} else if (limitSize > 0 && meter.written >= limitSize) {
+		} else if (limitSize > 0 && meteredStream.written >= limitSize) {
 			try {
 				unique++;
 				rollover();
@@ -284,13 +283,13 @@ public class JulDailyRollingHandler extends StreamHandler {
 		}
 
 		if (nfos != null) {
-			if (meter != null) {
-				meter.close();
+			if (meteredStream != null) {
+				meteredStream.close();
 			}
-			meter = nfos;
+			meteredStream = nfos;
 		}
 
-		super.setOutputStream(meter);
+		super.setOutputStream(meteredStream);
 	}
 
 	private void clearing() {

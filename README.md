@@ -7,7 +7,7 @@ select log implement:
 		<dependency>
 			<groupId>com.dinstone.loghub</groupId>
 			<artifactId>loghub-core</artifactId>
-			<version>1.2.0</version>
+			<version>1.2.1</version>
 		</dependency>
 ```
 or
@@ -15,7 +15,7 @@ or
 		<dependency>
 			<groupId>com.dinstone.loghub</groupId>
 			<artifactId>loghub-slf4j</artifactId>
-			<version>1.2.0</version>
+			<version>1.2.1</version>
 		</dependency>
 ```
 

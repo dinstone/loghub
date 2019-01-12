@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2018 dinstone<dinstone@163.com>
+ * Copyright (C) 2018-2019 dinstone<dinstone@163.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.dinstone.loghub.jul;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
@@ -66,10 +64,9 @@ public class JulDelegateFactory implements LogDelegateFactory {
 				logger.addHandler(rollingHandler);
 			}
 			if (option.isConsole()) {
-				ConsoleHandler consoleHandler = new ConsoleHandler();
-				consoleHandler.setFormatter(option.getFormatter());
-				consoleHandler.setLevel(option.getLevel());
-				logger.addHandler(consoleHandler);
+				Handler outHandler = new JulConsoleHandler(System.out, option.getFormatter());
+				outHandler.setLevel(option.getLevel());
+				logger.addHandler(outHandler);
 			}
 		} catch (IOException e) {
 			throw new RuntimeException("init jul logger error", e);
