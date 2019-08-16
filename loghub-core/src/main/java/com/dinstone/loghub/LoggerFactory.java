@@ -20,7 +20,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import com.dinstone.loghub.jul.JulDelegateFactory;
-import com.dinstone.loghub.spi.LogDelegate;
 import com.dinstone.loghub.spi.LogDelegateFactory;
 
 public class LoggerFactory {
@@ -97,8 +96,7 @@ public class LoggerFactory {
 	public static Logger getLogger(final String name) {
 		Logger logger = loggers.get(name);
 		if (logger == null) {
-			LogDelegate delegate = delegateFactory.createDelegate(name);
-			logger = new Logger(delegate);
+			logger = new Logger(delegateFactory.createDelegate(name));
 			Logger oldLogger = loggers.putIfAbsent(name, logger);
 			if (oldLogger != null) {
 				logger = oldLogger;
