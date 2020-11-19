@@ -216,6 +216,7 @@
 		<module>loghub-slf4j</module>
 		<module>loghub-log4j</module>
 		<module>loghub-log4j2</module>
+		<module>loghub-all</module>
 	</modules>
 	<dependencies>
 		<dependency>

@@ -15,6 +15,9 @@
  */
 package com.dinstone.loghub.slf4j;
 
+import org.slf4j.LoggerFactory;
+import org.slf4j.helpers.NOPLoggerFactory;
+
 import com.dinstone.loghub.spi.LogDelegate;
 import com.dinstone.loghub.spi.LogDelegateFactory;
 
@@ -24,9 +27,15 @@ import com.dinstone.loghub.spi.LogDelegateFactory;
  */
 public class Slf4jLogDelegateFactory implements LogDelegateFactory {
 
-	@Override
-	public LogDelegate createDelegate(final String clazz) {
-		return new Slf4jLogDelegate(clazz);
-	}
+    public Slf4jLogDelegateFactory() {
+        if (LoggerFactory.getILoggerFactory() instanceof NOPLoggerFactory) {
+            throw new NoClassDefFoundError("NOPLoggerFactory not supported");
+        }
+    }
+
+    @Override
+    public LogDelegate createDelegate(final String clazz) {
+        return new Slf4jLogDelegate(clazz);
+    }
 
 }
