@@ -6,6 +6,11 @@
 		<version>1.3.0</version>
 	</parent>
 	<artifactId>loghub-all</artifactId>
+	<properties>
+		<log4j2.version>2.5</log4j2.version>
+		<log4j.version>1.2.17</log4j.version>
+		<slf4j.version>1.7.12</slf4j.version>
+	</properties>
 	<build>
 		<plugins>
 			<plugin>
@@ -19,7 +24,6 @@
 							<goal>properties</goal>
 						</goals>
 					</execution>
-
 					<!-- Unpack all source files -->
 					<execution>
 						<id>unpack-sources</id>
@@ -31,10 +35,9 @@
 							<classifier>sources</classifier>
 							<includeScope>runtime</includeScope>
 							<includeGroupIds>${project.groupId}</includeGroupIds>
-							<outputDirectory>${generatedSourceDir}</outputDirectory>
+							<outputDirectory>${project.build.directory}/sources</outputDirectory>
 						</configuration>
 					</execution>
-
 					<!-- Unpack all class files -->
 					<execution>
 						<id>unpack-jars</id>
@@ -50,6 +53,22 @@
 						</configuration>
 					</execution>
 				</executions>
+			</plugin>
+
+			<!-- Generate Javadoc -->
+			<plugin>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<sourcepath>${project.build.directory}/sources</sourcepath>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
@@ -76,6 +95,31 @@
 			<groupId>com.dinstone.loghub</groupId>
 			<artifactId>loghub-log4j</artifactId>
 			<version>${project.version}</version>
+			<optional>true</optional>
+		</dependency>
+		<!-- Add optional dependencies explicitly to avoid Javadoc warnings and errors. -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j.version}</version>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-api</artifactId>
+			<version>${log4j2.version}</version>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
+			<version>${log4j2.version}</version>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>${log4j.version}</version>
 			<optional>true</optional>
 		</dependency>
 	</dependencies>
