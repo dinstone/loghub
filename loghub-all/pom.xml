@@ -9,30 +9,74 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-shade-plugin</artifactId>
-				<version>1.4</version>
+				<artifactId>maven-dependency-plugin</artifactId>
 				<executions>
+					<!-- Populate the properties whose key is groupId:artifactId:type and whose value is the path to the artifact -->
 					<execution>
-						<phase>package</phase>
+						<id>locate-dependencies</id>
+						<phase>initialize</phase>
 						<goals>
-							<goal>shade</goal>
+							<goal>properties</goal>
+						</goals>
+					</execution>
+
+					<!-- Unpack all source files -->
+					<execution>
+						<id>unpack-sources</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>unpack-dependencies</goal>
 						</goals>
 						<configuration>
-							<createSourcesJar>true</createSourcesJar>
-							<promoteTransitiveDependencies>true</promoteTransitiveDependencies>
-							<artifactSet>
-								<includes>
-									<include>loghub-core</include>
-									<include>loghub-slf4j</include>
-									<include>loghub-log4j2</include>
-									<include>loghub-log4j</include>
-								</includes>
-							</artifactSet>
+							<classifier>sources</classifier>
+							<includeScope>runtime</includeScope>
+							<includeGroupIds>${project.groupId}</includeGroupIds>
+							<outputDirectory>${generatedSourceDir}</outputDirectory>
+						</configuration>
+					</execution>
+
+					<!-- Unpack all class files -->
+					<execution>
+						<id>unpack-jars</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>unpack-dependencies</goal>
+						</goals>
+						<configuration>
+							<excludes>META-INF/**</excludes>
+							<includeScope>runtime</includeScope>
+							<includeGroupIds>${project.groupId}</includeGroupIds>
+							<outputDirectory>${project.build.outputDirectory}</outputDirectory>
 						</configuration>
 					</execution>
 				</executions>
 			</plugin>
 		</plugins>
 	</build>
+	<dependencies>
+		<dependency>
+			<groupId>com.dinstone.loghub</groupId>
+			<artifactId>loghub-core</artifactId>
+			<version>${project.version}</version>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>com.dinstone.loghub</groupId>
+			<artifactId>loghub-slf4j</artifactId>
+			<version>${project.version}</version>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>com.dinstone.loghub</groupId>
+			<artifactId>loghub-log4j2</artifactId>
+			<version>${project.version}</version>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>com.dinstone.loghub</groupId>
+			<artifactId>loghub-log4j</artifactId>
+			<version>${project.version}</version>
+			<optional>true</optional>
+		</dependency>
+	</dependencies>
 </project>
