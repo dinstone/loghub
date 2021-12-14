@@ -26,6 +26,6 @@
 		</dependency>
 	</dependencies>
 	<properties>
-		<log4j.version>2.5</log4j.version>
+		<log4j.version>2.16.0</log4j.version>
 	</properties>
 </project>
